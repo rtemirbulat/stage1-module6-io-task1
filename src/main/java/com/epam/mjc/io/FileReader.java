@@ -11,22 +11,30 @@ import java.util.stream.Collectors;
 
 public class FileReader {
 
-    public Profile getDataFromFile(File file) throws IOException {
+    public Profile getDataFromFile(File file){
         FileInputStream in = null;
-        String result = "";
+        StringBuilder result = new StringBuilder();
         try {
             in = new FileInputStream(file.getPath());
             int c;
             while ((c = in.read()) != -1) {
-                result += (char) c;
+                result.append((char) c);
             }
-        } finally {
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        finally {
             if (in != null) {
-                in.close();
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         System.out.println(result);
-        Map<String, String> keyValueMap = Arrays.stream(result.split("\n"))
+        Map<String, String> keyValueMap = Arrays.stream(result.toString().split("\n"))
                 .map(kv -> kv.split(": "))
                 .filter(kvArray -> kvArray.length == 2)
                 .collect(Collectors.toMap(kv -> kv[0], kv -> kv[1]));
