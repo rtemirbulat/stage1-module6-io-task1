@@ -2,7 +2,6 @@ package com.epam.mjc.io;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -12,28 +11,19 @@ import java.util.stream.Collectors;
 public class FileReader {
 
     public Profile getDataFromFile(File file){
-        FileInputStream in = null;
+
         StringBuilder result = new StringBuilder();
-        try {
-            in = new FileInputStream(file.getPath());
+        try(FileInputStream in = new FileInputStream(file.getPath())) {
             int c;
             while ((c = in.read()) != -1) {
                 result.append((char) c);
             }
         }
-        catch (IOException e){
-            e.printStackTrace();
+        catch(IOException e) {
+            throw new IllegalArgumentException();
         }
-        finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        System.out.println(result);
+
+
         Map<String, String> keyValueMap = Arrays.stream(result.toString().split("\n"))
                 .map(kv -> kv.split(": "))
                 .filter(kvArray -> kvArray.length == 2)
